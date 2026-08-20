@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="HOMAG Produktions-Kompasset - interaktivt analyseværktøj der kortlægger potentialet i din træbearbejdende produktion og estimerer investeringsramme og tilbagebetalingstid.">
+<title>HOMAG Produktions-Kompasset</title>
+<style>
+/* ============================================================
+   HOMAG Produktions-Kompasset — designsystem
+   ============================================================ */
+:root{
+  --homag-blue:#005080;
+  --homag-dark:#003D66;
+  --homag-light:#0A79B8;
+  --homag-wash:#E8F1F7;
+  --graphite-900:#1C2226;
+  --graphite-700:#333A40;
+  --graphite-500:#5A646C;
+  --graphite-300:#98A2AA;
+  --graphite-100:#DCE2E7;
+  --canvas:#F2F5F8;
+  --white:#FFFFFF;
+  --accent:#E8801A;
+  --accent-soft:#FDF1E4;
+  --green:#1E8A5F;
+  --green-soft:#E6F4EE;
+  --red:#C0392B;
+  --radius-s:6px;
+  --radius:10px;
+  --radius-l:16px;
+  --shadow-s:0 1px 2px rgba(16,32,44,.06),0 1px 3px rgba(16,32,44,.08);
+  --shadow-m:0 4px 12px rgba(16,32,44,.08),0 1px 3px rgba(16,32,44,.06);
+  --shadow-l:0 18px 40px rgba(16,32,44,.14);
+  --font:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font);
+  background:var(--canvas);
+  color:var(--graphite-700);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+h1,h2,h3,h4{color:var(--graphite-900);margin:0;font-weight:600;letter-spacing:-.01em}
+p{margin:0}
+button{font-family:inherit}
+
+/* ---------- Topbar ---------- */
+.topbar{
+  background:linear-gradient(96deg,var(--homag-dark) 0%,var(--homag-blue) 62%,#00618F 100%);
+  color:#fff;
+  padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  box-shadow:0 2px 10px rgba(0,61,102,.25);
+  position:relative;z-index:5;
+}
+.brand{display:flex;align-items:center;gap:16px;min-width:0}
+.logo{
+  font-weight:800;font-size:24px;letter-spacing:.16em;
+  background:#fff;color:var(--homag-dark);
+  padding:4px 12px 3px;border-radius:3px;line-height:1.2;flex-shrink:0;
+}
+.brand-text{min-width:0}
+.brand-text .app-name{font-size:16px;font-weight:600;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-text .app-sub{font-size:12.5px;color:#B9D6E8;letter-spacing:.04em;text-transform:uppercase}
+.topbar-meta{display:flex;align-items:center;gap:18px;font-size:13px;color:#CFE3EF;white-space:nowrap}
+.topbar-meta .pill{
+  border:1px solid rgba(255,255,255,.28);border-radius:100px;padding:5px 14px;
+  background:rgba(255,255,255,.08);font-size:12.5px;letter-spacing:.02em;
+}
+
+/* ---------- Progress ---------- */
+.progress{background:var(--white);border-bottom:1px solid var(--graphite-100);padding:0 28px;position:sticky;top:0;z-index:4}
+.progress-inner{max-width:1320px;margin:0 auto}
+.progress-track{height:4px;background:var(--graphite-100);border-radius:4px;overflow:hidden;margin-top:16px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--homag-blue),var(--homag-light));width:16%;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.steps{list-style:none;display:flex;margin:0;padding:12px 0 14px;gap:6px}
+.steps li{
+  flex:1;display:flex;align-items:center;gap:9px;font-size:13px;color:var(--graphite-300);
+  min-width:0;transition:color .25s;
+}
+.steps li .num{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  background:var(--graphite-100);color:var(--graphite-500);
+  transition:background .25s,color .25s,box-shadow .25s;
+}
+.steps li .txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.steps li.done{color:var(--homag-blue)}
+.steps li.done .num{background:var(--green-soft);color:var(--green)}
+.steps li.active{color:var(--homag-dark);font-weight:600}
+.steps li.active .num{background:var(--homag-blue);color:#fff;box-shadow:0 0 0 4px var(--homag-wash)}
+
+/* ---------- Layout ---------- */
+.layout{
+  flex:1;width:100%;max-width:1320px;margin:0 auto;padding:30px 28px 56px;
+  display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:26px;align-items:start;
+}
+.layout.wide{grid-template-columns:minmax(0,1fr)}
+.card{background:var(--white);border:1px solid var(--graphite-100);border-radius:var(--radius-l);box-shadow:var(--shadow-m)}
+.panel{padding:32px 34px 28px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--homag-light);margin-bottom:12px;
+}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--accent);border-radius:2px}
+.panel h1{font-size:27px;line-height:1.25;margin-bottom:8px}
+.panel .lead{color:var(--graphite-500);font-size:15px;max-width:62ch}
+.qblock{margin-top:30px}
+.qblock:first-of-type{margin-top:26px}
+.qlabel{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.qlabel .qtag{
+  font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--homag-blue);
+  background:var(--homag-wash);border-radius:4px;padding:3px 8px;flex-shrink:0;text-transform:uppercase;
+}
+.qlabel h2{font-size:18px;line-height:1.4}
+.qhint{font-size:13.5px;color:var(--graphite-500);margin:-6px 0 14px}
+
+/* ---------- Answer cards ---------- */
+.options{display:grid;gap:10px}
+.opt{
+  display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;
+  background:var(--white);border:1.5px solid var(--graphite-100);border-radius:var(--radius);
+  padding:15px 16px;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s,background .18s;
+}
+.opt:hover{border-color:var(--homag-light);box-shadow:var(--shadow-s);transform:translateY(-1px)}
+.opt:focus-visible{outline:3px solid rgba(10,121,184,.35);outline-offset:2px}
+.opt .ico{
+  width:40px;height:40px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--homag-wash);color:var(--homag-blue);transition:background .18s,color .18s;
+}
+.opt .ico svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.opt .body{flex:1;min-width:0}
+.opt .t{font-size:15.5px;font-weight:600;color:var(--graphite-900);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opt .t .key{
+  font-size:11px;font-weight:700;color:var(--graphite-500);background:var(--graphite-100);
+  border-radius:4px;padding:1px 6px;letter-spacing:.06em;
+}
+.opt .d{font-size:13.5px;color:var(--graphite-500);margin-top:3px}
+.opt .mark{
+  width:22px;height:22px;border-radius:50%;border:2px solid var(--graphite-100);flex-shrink:0;margin-top:9px;
+  display:flex;align-items:center;justify-content:center;transition:.18s;
+}
+.opt .mark svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.opt.sel{border-color:var(--homag-blue);background:linear-gradient(180deg,#F7FBFD,#fff);box-shadow:0 0 0 3px rgba(0,80,128,.09)}
+.opt.sel .ico{background:var(--homag-blue);color:#fff}
+.opt.sel .mark{background:var(--homag-blue);border-color:var(--homag-blue)}
+.opt.sel .mark svg{opacity:1}
+.opt.sel .t .key{background:var(--homag-wash);color:var(--homag-blue)}
+
+/* ---------- Nav ---------- */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:32px;padding-top:22px;border-top:1px solid var(--graphite-100)}
+.btn{
+  border:none;border-radius:8px;padding:13px 26px;font-size:15px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;gap:9px;transition:.18s;letter-spacing:.01em;
+}
+.btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-primary{background:var(--homag-blue);color:#fff;box-shadow:0 2px 8px rgba(0,80,128,.28)}
+.btn-primary:hover:not(:disabled){background:var(--homag-dark);box-shadow:0 4px 14px rgba(0,80,128,.34)}
+.btn-primary:disabled{background:var(--graphite-100);color:var(--graphite-300);cursor:not-allowed;box-shadow:none}
+.btn-ghost{background:transparent;color:var(--graphite-500);border:1.5px solid var(--graphite-100)}
+.btn-ghost:hover{color:var(--homag-blue);border-color:var(--homag-light);background:#fff}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 2px 10px rgba(232,128,26,.32)}
+.btn-accent:hover:not(:disabled){background:#D2700F}
+.btn-block{width:100%;justify-content:center;padding:15px 26px;font-size:15.5px}
+.nav-hint{font-size:13px;color:var(--graphite-300)}
+
+/* ---------- Videns-nuggets ---------- */
+.knowledge{position:sticky;top:104px;display:flex;flex-direction:column;gap:16px}
+.k-head{display:flex;align-items:center;gap:10px;padding:2px 4px}
+.k-head .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.k-head h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--graphite-500);font-weight:700}
+.nugget{
+  background:var(--white);border:1px solid var(--graphite-100);border-radius:var(--radius);
+  box-shadow:var(--shadow-s);overflow:hidden;animation:rise .38s cubic-bezier(.2,.7,.3,1) both;
+}
+.nugget.hl{border-left:4px solid var(--accent)}
+.nugget.blue{border-left:4px solid var(--homag-blue)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.nugget-in{padding:17px 19px 19px}
+.nugget .tag{
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:7px;display:block;
+}
+.nugget.blue .tag{color:var(--homag-blue)}
+.nugget h4{font-size:15.5px;line-height:1.4;margin-bottom:7px}
+.nugget p{font-size:13.8px;color:var(--graphite-500);line-height:1.6}
+.nugget .src{font-size:11.5px;color:var(--graphite-300);margin-top:11px;font-style:italic}
+.stat{display:flex;align-items:baseline;gap:9px;margin:12px 0 4px}
+.stat .big{font-size:31px;font-weight:700;color:var(--homag-dark);letter-spacing:-.02em;line-height:1}
+.stat .unit{font-size:13px;color:var(--graphite-500);font-weight:600}
+.chart{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.bar-row{display:grid;grid-template-columns:118px 1fr 54px;align-items:center;gap:10px;font-size:12.5px}
+.bar-row .bl{color:var(--graphite-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:9px;background:var(--graphite-100);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--homag-light);animation:grow .7s cubic-bezier(.2,.8,.3,1) both}
+.bar i.warm{background:var(--accent)}
+.bar i.good{background:var(--green)}
+.bar i.dim{background:var(--graphite-300)}
+.bar-row .bv{text-align:right;font-weight:700;color:var(--graphite-700);font-variant-numeric:tabular-nums}
+@keyframes grow{from{width:0 !important}}
+.klist{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.klist li{font-size:13.5px;color:var(--graphite-500);padding-left:22px;position:relative;line-height:1.5}
+.klist li::before{
+  content:"";position:absolute;left:4px;top:8px;width:7px;height:7px;border-radius:2px;
+  background:var(--homag-light);
+}
+
+/* ---------- Resultat-dashboard ---------- */
+.result-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:26px;align-items:start}
+.report-head{
+  background:linear-gradient(100deg,var(--homag-dark),var(--homag-blue) 70%,#00618F);
+  color:#fff;border-radius:var(--radius-l);padding:28px 32px;box-shadow:var(--shadow-l);
+  display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center;
+}
+.gauge{position:relative;width:148px;height:148px;flex-shrink:0}
+.gauge svg{transform:rotate(-90deg);width:148px;height:148px}
+.gauge circle{fill:none;stroke-width:11;stroke-linecap:round}
+.gauge .track{stroke:rgba(255,255,255,.18)}
+.gauge .val{stroke:#fff;transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.3,1)}
+.gauge .num{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.gauge .num b{font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.gauge .num span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#B9D6E8;margin-top:3px}
+.report-head h2{color:#fff;font-size:24px;line-height:1.25;margin-bottom:8px}
+.report-head .rh-eyebrow{font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:#9CC8E3;font-weight:700;margin-bottom:9px}
+.report-head p{color:#D5E7F2;font-size:14.5px;max-width:58ch}
+.report-head .badge{
+  display:inline-block;margin-top:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);
+  border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;
+}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
+.kpi{background:var(--white);border:1px solid var(--graphite-100);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow-s);position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--homag-blue)}
+.kpi.amber::after{background:var(--accent)}
+.kpi.green::after{background:var(--green)}
+.kpi .kl{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--graphite-500)}
+.kpi .kv{font-size:25px;font-weight:700;color:var(--homag-dark);letter-spacing:-.02em;margin-top:8px;line-height:1.15}
+.kpi .kv small{font-size:15px;font-weight:600;color:var(--graphite-500);letter-spacing:0}
+.kpi .kd{font-size:13px;color:var(--graphite-500);margin-top:7px;line-height:1.5}
+.section-title{display:flex;align-items:center;gap:12px;margin:34px 0 14px}
+.section-title h3{font-size:18px}
+.section-title .line{flex:1;height:1px;background:var(--graphite-100)}
+.breakdown{background:var(--white);border:1px solid var(--graphite-100);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-s)}
+.breakdown .bar-row{grid-template-columns:172px 1fr 78px}
+.recs{display:flex;flex-direction:column;gap:14px}
+.rec{
+  background:var(--white);border:1px solid var(--graphite-100);border-radius:var(--radius);
+  padding:20px 22px;box-shadow:var(--shadow-s);border-top:3px solid var(--homag-blue);
+}
+.rec-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.rec h4{font-size:16.5px;line-height:1.35}
+.rec .cat{
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--homag-wash);color:var(--homag-blue);border-radius:4px;padding:4px 9px;white-space:nowrap;
+}
+.rec p{font-size:14px;color:var(--graphite-500);margin-top:8px;line-height:1.6}
+.rec .why{
+  margin-top:12px;background:var(--accent-soft);border-radius:7px;padding:10px 13px;
+  font-size:13px;color:#8A5314;line-height:1.5;
+}
+.rec .why b{color:#6F420F}
+.disclaimer{font-size:12.5px;color:var(--graphite-300);line-height:1.6;margin-top:22px;border-top:1px dashed var(--graphite-100);padding-top:16px}
+
+/* ---------- Lead-formular ---------- */
+.lead-card{position:sticky;top:104px;background:var(--white);border:1px solid var(--graphite-100);border-radius:var(--radius-l);box-shadow:var(--shadow-m);overflow:hidden}
+.lead-head{background:linear-gradient(160deg,#F7FAFC,#EDF3F8);padding:22px 24px 18px;border-bottom:1px solid var(--graphite-100)}
+.lead-head h3{font-size:18px;line-height:1.3}
+.lead-head p{font-size:13.5px;color:var(--graphite-500);margin-top:7px}
+.lead-body{padding:22px 24px 24px}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--graphite-700);margin-bottom:6px;letter-spacing:.01em}
+.field label .req{color:var(--accent)}
+.field input,.field textarea{
+  width:100%;border:1.5px solid var(--graphite-100);border-radius:8px;padding:11px 13px;
+  font-size:14.5px;font-family:inherit;color:var(--graphite-900);background:#FCFDFE;transition:.16s;
+}
+.field textarea{resize:vertical;min-height:82px;line-height:1.5}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--homag-light);background:#fff;box-shadow:0 0 0 3px rgba(10,121,184,.13)}
+.field.err input,.field.err textarea{border-color:var(--red);background:#FEF7F6}
+.field .msg{font-size:12px;color:var(--red);margin-top:5px;display:none}
+.field.err .msg{display:block}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--graphite-500);line-height:1.55;margin:4px 0 18px}
+.consent input{margin-top:2px;width:16px;height:16px;accent-color:var(--homag-blue);flex-shrink:0}
+.trust{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--graphite-100)}
+.trust div{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--graphite-500);line-height:1.5}
+.trust svg{width:15px;height:15px;stroke:var(--green);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:2px}
+.success{padding:30px 26px;text-align:center;animation:rise .4s both}
+.success .ok{
+  width:60px;height:60px;border-radius:50%;background:var(--green-soft);margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.success .ok svg{width:30px;height:30px;stroke:var(--green);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.success h3{font-size:19px;margin-bottom:9px}
+.success p{font-size:14px;color:var(--graphite-500);line-height:1.6}
+.success .ref{
+  margin:18px 0;background:var(--canvas);border:1px dashed var(--graphite-100);border-radius:8px;padding:12px;
+  font-size:13px;color:var(--graphite-500);
+}
+.success .ref b{color:var(--homag-dark);font-family:"SFMono-Regular",Consolas,monospace;letter-spacing:.04em}
+.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Footer ---------- */
+.footer{
+  border-top:1px solid var(--graphite-100);background:var(--white);
+  padding:20px 28px;font-size:12.5px;color:var(--graphite-300);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.footer b{color:var(--graphite-500);font-weight:600}
+
+/* ---------- Responsivt ---------- */
+@media (max-width:1080px){
+  .layout{grid-template-columns:minmax(0,1fr);padding:24px 20px 44px}
+  .knowledge,.lead-card{position:static}
+  .result-grid{grid-template-columns:minmax(0,1fr)}
+  .report-head{grid-template-columns:auto 1fr;gap:22px;padding:24px}
+}
+@media (max-width:720px){
+  body{font-size:15.5px}
+  .topbar{padding:12px 16px;flex-wrap:wrap;gap:10px}
+  .topbar-meta{font-size:12px;gap:10px}
+  .topbar-meta .pill{display:none}
+  .logo{font-size:20px}
+  .progress{padding:0 16px}
+  .steps li .txt{display:none}
+  .steps li{flex:0 0 auto;justify-content:center}
+  .steps{justify-content:space-between;padding:10px 0 12px}
+  .layout{padding:18px 14px 40px;gap:18px}
+  .panel{padding:24px 20px 22px}
+  .panel h1{font-size:22px}
+  .opt{padding:13px 13px;gap:11px}
+  .opt .ico{width:36px;height:36px}
+  .nav{flex-direction:column-reverse;align-items:stretch;gap:10px}
+  .nav .btn{width:100%;justify-content:center}
+  .nav-hint{text-align:center}
+  .kpis{grid-template-columns:minmax(0,1fr)}
+  .report-head{grid-template-columns:minmax(0,1fr);text-align:center;justify-items:center;padding:24px 20px}
+  .report-head p{max-width:none}
+  .gauge,.gauge svg{width:128px;height:128px}
+  .bar-row,.breakdown .bar-row{grid-template-columns:1fr auto;row-gap:5px;font-size:12.5px}
+  .bar-row .bl{grid-column:1;white-space:normal}
+  .bar-row .bv{grid-column:2}
+  .bar-row .bar{grid-column:1/-1}
+  .footer{flex-direction:column;gap:6px}
+}
+
+/* ---------- Print / PDF ---------- */
+@media print{
+  @page{margin:14mm}
+  body{background:#fff;font-size:11.5pt}
+  .topbar{background:#fff !important;color:var(--homag-dark);box-shadow:none;border-bottom:3px solid var(--homag-blue);padding:0 0 10px}
+  .logo{background:var(--homag-dark);color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .brand-text .app-sub{color:var(--graphite-500)}
+  .progress,.footer,.nav,.lead-card,.no-print,.topbar-meta{display:none !important}
+  .layout{padding:0;max-width:none;display:block}
+  .card,.panel{border:none;box-shadow:none;padding:0}
+  .result-grid{display:block}
+  .report-head,.kpi,.rec,.breakdown,.nugget{
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;break-inside:avoid;
+  }
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .rec{border:1px solid var(--graphite-100);border-top:3px solid var(--homag-blue)}
+  .print-only{display:block !important}
+}
+.print-only{display:none}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">HOMAG</div>
+    <div class="brand-text">
+      <div class="app-name">Produktions-Kompasset</div>
+      <div class="app-sub">Analyse &amp; investeringsestimat</div>
+    </div>
+  </div>
+  <div class="topbar-meta">
+    <span class="pill">6 trin &middot; ca. 3 minutter</span>
+    <span id="topDate"></span>
+  </div>
+</header>
+
+<div class="progress no-print">
+  <div class="progress-inner">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <ol class="steps" id="stepList"></ol>
+  </div>
+</div>
+
+<main class="layout" id="layout">
+  <section class="card panel" id="panel"></section>
+  <aside class="knowledge" id="knowledge"></aside>
+</main>
+
+<footer class="footer no-print">
+  <div><b>HOMAG Danmark A/S</b> &middot; Produktions-Kompasset &middot; Estimaterne er vejledende og baseres p&aring; erfaringstal fra danske tr&aelig;bearbejdende virksomheder.</div>
+  <div>Behandling af persondata sker efter GDPR. Data anvendes udelukkende til produktionsr&aring;dgivning.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1. Ikonbibliotek
+   ============================================================ */
+const ICONS = {
+  tools:'<path d="M14.8 6.2a4 4 0 0 1-5.3 5.3L4 17v3h3l5.5-5.5a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.9-2.9z"/>',
+  factory:'<path d="M3 21h18"/><path d="M3 21V10l5.5 3.5V10L14 13.5V6l6 4v11"/><path d="M7 17h2"/><path d="M13 17h2"/>',
+  home:'<path d="M4 21V10l8-6 8 6v11"/><path d="M9.5 21v-6h5v6"/>',
+  door:'<rect x="6" y="3" width="12" height="18" rx="1.5"/><circle cx="14.5" cy="12.5" r="1"/><path d="M4 21h16"/>',
+  spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.9"/>',
+  hourglass:'<path d="M7 3h10"/><path d="M7 21h10"/><path d="M8 3v3.5L12 11l4-4.5V3"/><path d="M8 21v-3.5L12 13l4 4.5V21"/>',
+  shield:'<path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z"/><path d="M9.2 12l2 2 3.6-3.8"/>',
+  warning:'<path d="M12 3.5l9 16H3z"/><path d="M12 9.5v4.2"/><path d="M12 17h.01"/>',
+  pulse:'<path d="M3 12h3.5l2-5 3.5 11 2.5-6h6.5"/>',
+  users:'<circle cx="9" cy="7.5" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16.5 5.2a3.2 3.2 0 0 1 0 6.2"/><path d="M18.5 20a6.2 6.2 0 0 0-3-5.1"/>',
+  lift:'<rect x="4" y="3.5" width="16" height="5" rx="1"/><path d="M12 8.5v5"/><path d="M8.5 13.5h7l-1.5 7h-4z"/>',
+  robot:'<rect x="3.5" y="8" width="17" height="10.5" rx="2.5"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/><path d="M12 4.5V8"/><circle cx="12" cy="3.4" r="1.2"/>',
+  paper:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12.5h6"/><path d="M9 16.5h6"/>',
+  transfer:'<path d="M4 8h11"/><path d="M12 5l3 3-3 3"/><path d="M20 16H9"/><path d="M12 13l-3 3 3 3"/>',
+  network:'<circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18.5" r="2.4"/><path d="M7.7 7.8l3.2 8.5"/><path d="M16.3 7.8l-3.2 8.5"/>',
+  chart:'<path d="M4 20V11"/><path d="M10 20V4.5"/><path d="M16 20v-7"/><path d="M3 20h18"/>',
+  coins:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+  growth:'<path d="M4 17l5-5 4 4 7-8"/><path d="M15 8h5v5"/>',
+  screen:'<rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8.5 20.5h7"/><path d="M12 16.5v4"/>',
+  wall:'<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 12h18"/><path d="M9.5 5v7"/><path d="M15 12v7"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  arrowR:'<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',
+  arrowL:'<path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/>',
+  print:'<path d="M7 9V3h10v6"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  refresh:'<path d="M20 11a8 8 0 1 0-1.6 5.6"/><path d="M20 5.5V11h-5.5"/>'
+};
+function icon(name){ return '<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[name]||'')+'</svg>'; }
+
+/* ============================================================
+   2. Sp&oslash;rgeramme (trin 1-5)
+   ============================================================ */
+const STEPS = [
+  {
+    n:1, short:'Profil', title:'Profilering &amp; segmentering',
+    eyebrow:'Trin 1 af 6 &middot; Virksomhedsprofil',
+    heading:'Lad os starte med jeres produktionstype',
+    lead:'Produktionsformen afg&oslash;r hvilke flaskehalse der typisk koster mest &mdash; og hvilke HOMAG-teknologier der giver hurtigst effekt. V&aelig;lg den beskrivelse der ligger t&aelig;ttest p&aring; jeres hverdag.',
+    questions:[{
+      id:'segment', tag:'Sp&oslash;rgsm&aring;l 1',
+      text:'Hvilken type produktion beskriver bedst din virksomhed?',
+      hint:'V&aelig;lg det omr&aring;de der udg&oslash;r st&oslash;rstedelen af jeres oms&aelig;tning.',
+      options:[
+        {key:'A', icon:'tools',   t:'Snedkeri &amp; specialinventar', d:'M&oslash;bler, k&oslash;kkener, butiksinventar og custom tr&aelig;arbejde i mindre serier.'},
+        {key:'B', icon:'factory', t:'Industri &amp; serieproduktion',  d:'M&oslash;belfabrik, pladebearbejdning og gentagne serier med h&oslash;jt volumen.'},
+        {key:'C', icon:'home',    t:'Tr&aelig;byggeri &amp; elementer',    d:'Huse, v&aelig;g- og tagelementer, sp&aelig;r og pr&aelig;fabrikerede byggemoduler.'},
+        {key:'D', icon:'door',    t:'Bygningskomponenter',        d:'D&oslash;re, vinduer, trapper og gulve &mdash; komponenter med h&oslash;j variantgrad.'}
+      ]
+    }]
+  },
+  {
+    n:2, short:'Maskinsundhed', title:'Maskinsundhed &amp; risikoprofil',
+    eyebrow:'Trin 2 af 6 &middot; Driftsstabilitet',
+    heading:'Hvor robust er jeres maskinpark?',
+    lead:'Maskinernes alder og antallet af uplanlagte stop er de st&aelig;rkeste indikatorer for skjulte omkostninger i produktionen. Her kortl&aelig;gger vi jeres risikoprofil.',
+    questions:[
+      {
+        id:'age', tag:'Sp&oslash;rgsm&aring;l 2A',
+        text:'Hvad er gennemsnitsalderen p&aring; jeres prim&aelig;re maskinpark?',
+        hint:'T&aelig;nk p&aring; sav, CNC, kantlimer og de maskiner der k&oslash;rer flest driftstimer.',
+        options:[
+          {key:'A', icon:'spark',     t:'Under 3 &aring;r', d:'Moderne park med nyere styringer og aktiv producentsupport.'},
+          {key:'B', icon:'clock',     t:'3&ndash;8 &aring;r',    d:'Etableret park &mdash; stabil drift, men begyndende slid p&aring; sliddele.'},
+          {key:'C', icon:'hourglass', t:'Over 8 &aring;r',  d:'&AElig;ldre park med stigende servicebehov og l&aelig;ngere reservedelstid.'}
+        ]
+      },
+      {
+        id:'downtime', tag:'Sp&oslash;rgsm&aring;l 2B',
+        text:'Hvor ofte oplever I uplanlagte produktionsstop pga. maskinfejl?',
+        hint:'Stop der reelt s&aelig;tter produktionen i st&aring; &mdash; ikke planlagt service eller omstilling.',
+        options:[
+          {key:'A', icon:'shield',  t:'Sj&aelig;ldent / aldrig',   d:'H&oslash;j driftssikkerhed og forebyggende vedligehold i faste intervaller.'},
+          {key:'B', icon:'pulse',   t:'1&ndash;2 gange om m&aring;neden', d:'Periodiske stop der p&aring;virker leveringstider i sp&aelig;ndte uger.'},
+          {key:'C', icon:'warning', t:'Ugentligt',           d:'Hyppige stop med akut brandslukning og betydeligt operat&oslash;rspild.'}
+        ]
+      }
+    ]
+  },
+  {
+    n:3, short:'Automation', title:'Flaskehalse &amp; automation',
+    eyebrow:'Trin 3 af 6 &middot; Materialeh&aring;ndtering',
+    heading:'Hvor mange h&aelig;nder binder jeres hovedmaskiner?',
+    lead:'Manuel il&aelig;gning og afl&aelig;sning er den hyppigste flaskehals i dansk tr&aelig;industri. Det binder mandetimer p&aring; opgaver, der ikke skaber v&aelig;rdi for kunden.',
+    questions:[{
+      id:'handling', tag:'Sp&oslash;rgsm&aring;l 3A',
+      text:'Hvordan h&aring;ndteres il&aelig;gning og afl&aelig;sning ved jeres hovedmaskiner (sav / CNC / kantlimer)?',
+      hint:'V&aelig;lg det m&oslash;nster der g&aelig;lder for de fleste af jeres hovedmaskiner.',
+      options:[
+        {key:'A', icon:'users', t:'2 personer pr. maskine', d:'Manuelt l&oslash;ft af plader ind og ud &mdash; to operat&oslash;rer bundet pr. maskine.'},
+        {key:'B', icon:'lift',  t:'1 person med vakuuml&oslash;fter', d:'Ergonomisk hj&aelig;lp, men operat&oslash;ren f&oslash;lger fortsat maskinen t&aelig;t.'},
+        {key:'C', icon:'robot', t:'Automatisk pladelager / returl&oslash;b', d:'Maskinen fodres og t&oslash;mmes automatisk &mdash; operat&oslash;ren overv&aring;ger flere celler.'}
+      ]
+    }]
+  },
+  {
+    n:4, short:'Digitalt flow', title:'Digital workflow &amp; software',
+    eyebrow:'Trin 4 af 6 &middot; Data &amp; materialeudnyttelse',
+    heading:'Hvordan bev&aelig;ger data sig fra kontor til maskine?',
+    lead:'Bruddet mellem kontor og v&aelig;rksted koster b&aring;de tid og materiale. Manuel indtastning ved styringen er samtidig den hyppigste kilde til kassering og omk&oslash;rsler.',
+    questions:[
+      {
+        id:'data', tag:'Sp&oslash;rgsm&aring;l 4A',
+        text:'Hvordan overf&oslash;res ordredata fra kontor til v&aelig;rksted og maskiner?',
+        hint:'Fra ordrebekr&aelig;ftelse eller tegning til f&aelig;rdigt maskinprogram.',
+        options:[
+          {key:'A', icon:'paper',    t:'Papirtegninger og manuel indtastning', d:'Operat&oslash;ren taster m&aring;l og programmer ind direkte ved styringen.'},
+          {key:'B', icon:'transfer', t:'DXF/filer via USB eller netv&aelig;rk',   d:'Digitale filer, men manuel h&aring;ndtering, versionsstyring og efterretning.'},
+          {key:'C', icon:'network',  t:'Fuld CAD/CAM-integration',            d:'Data l&oslash;ber ubrudt fra konstruktion til maskine, f.eks. via woodWOP.'}
+        ]
+      },
+      {
+        id:'waste', tag:'Sp&oslash;rgsm&aring;l 4B',
+        text:'Hvad er jeres estimerede spildprocent p&aring; plademateriale?',
+        hint:'Andelen af indk&oslash;bt pladeareal der ender som afskaer, fejlemner eller kassation.',
+        options:[
+          {key:'A', icon:'check',   t:'Under 8 %',              d:'H&oslash;j udnyttelsesgrad &mdash; formentlig optimeret opdeling og restpladestyring.'},
+          {key:'B', icon:'chart',   t:'8&ndash;18 %',                d:'Typisk niveau i branchen med tydeligt optimeringspotentiale.'},
+          {key:'C', icon:'warning', t:'Over 18 % / ved ikke',   d:'Manglende m&aring;ling er i sig selv et signal om skjult materialetab.'}
+        ]
+      }
+    ]
+  },
+  {
+    n:5, short:'M&aring;l', title:'Fremtidssikring &amp; skalering',
+    eyebrow:'Trin 5 af 6 &middot; Forretningsm&aring;l',
+    heading:'Hvad skal investeringen prim&aelig;rt l&oslash;se?',
+    lead:'Dit prim&aelig;re m&aring;l afg&oslash;r prioriteringen i anbefalingen &mdash; om tyngden skal ligge p&aring; software, h&aring;ndtering, maskinkapacitet eller elementbyggeri.',
+    questions:[{
+      id:'goal', tag:'Sp&oslash;rgsm&aring;l 5',
+      text:'Hvad er dit prim&aelig;re forretningsm&aelig;ssige m&aring;l for de n&aelig;ste 12 m&aring;neder?',
+      hint:'V&aelig;lg det m&aring;l der vejer tungest i ledelsens prioritering lige nu.',
+      options:[
+        {key:'A', icon:'coins',  t:'S&aelig;nke produktionsomkostninger', d:'Frig&oslash;re mandetimer og reducere spild pr. produceret enhed.'},
+        {key:'B', icon:'growth', t:'&Oslash;ge kapaciteten uden nyans&aelig;ttelser', d:'Mere output pr. skiftehold med den nuv&aelig;rende bemanding.'},
+        {key:'C', icon:'screen', t:'Digitalisere og fjerne papir', d:'Ubrudt datastr&oslash;m fra ordre til maskine og f&aelig;rre indtastningsfejl.'},
+        {key:'D', icon:'wall',   t:'Op- eller igangs&aelig;tte elementbyggeri', d:'Pr&aelig;fabrikeret v&aelig;g-, tag- og gulvproduktion (WEINMANN).'}
+      ]
+    }]
+  }
+];
+
+/* Point pr. svar (Produktions-Index, samlet maks. 100) */
+const SCORE = {
+  age:      {A:20, B:12, C:4},
+  downtime: {A:20, B:11, C:3},
+  handling: {A:4,  B:12, C:20},
+  data:     {A:3,  B:11, C:20},
+  waste:    {A:20, B:11, C:3}
+};
+const SEGMENT_LABEL = {
+  A:'Snedkeri &amp; specialinventar',
+  B:'Industri &amp; serieproduktion',
+  C:'Tr&aelig;byggeri &amp; elementer',
+  D:'Bygningskomponenter'
+};
+
+/* ============================================================
+   3. Videns-nuggets (dynamisk h&oslash;jrekolonne)
+   ============================================================ */
+function bar(label, pct, val, cls){
+  return '<div class="bar-row"><span class="bl">'+label+'</span><div class="bar"><i class="'+(cls||'')+'" style="width:'+pct+'%"></i></div><span class="bv">'+val+'</span></div>';
+}
+function nug(o){
+  return '<article class="nugget '+(o.style||'blue')+'"><div class="nugget-in">'+
+    '<span class="tag">'+o.tag+'</span><h4>'+o.title+'</h4>'+o.html+
+    (o.src?'<div class="src">'+o.src+'</div>':'')+'</div></article>';
+}
+
+const NUGGETS = {
+  1:function(a){
+    const out=[];
+    out.push({tag:'Branchebenchmark', style:'blue',
+      title:'Hvor ligger v&aelig;rditabet i dansk tr&aelig;industri?',
+      html:'<p>P&aring; tv&aelig;rs af danske tr&aelig;bearbejdende virksomheder ligger den v&aelig;rdiskabende maskintid typisk kun p&aring; omkring halvdelen af den betalte produktionstid. Resten g&aring;r til h&aring;ndtering, omstilling, s&oslash;gning efter emner og ventetid.</p>'+
+      '<div class="chart">'+
+        bar('V&aelig;rdiskabende', 52, '52 %','good')+
+        bar('H&aring;ndtering', 22, '22 %','warm')+
+        bar('Omstilling', 14, '14 %','')+
+        bar('Stop og ventetid', 12, '12 %','dim')+
+      '</div>',
+      src:'Erfaringstal fra HOMAG produktionsanalyser i Norden.'});
+    const seg={
+      A:{tag:'Snedkeri &amp; specialinventar', title:'Enkeltstyksproduktion kr&aelig;ver digital ensretning',
+         html:'<p>I ordreproducerende snedkerier ligger gevinsten sj&aelig;ldent i st&oslash;rre maskiner, men i at fjerne dobbeltarbejde: &eacute;n digital emnestamdata der f&oslash;lger emnet fra tilbud til pakkeliste. Typisk frig&oslash;res 6&ndash;10 timer om ugen alene p&aring; arbejdsforberedelse.</p>'+
+         '<ul class="klist"><li>Barcode-styret emneidentifikation p&aring; v&aelig;rkstedet</li><li>Nesting af restplader frem for nye hele plader</li><li>Kantlimning uden fast tomandsbetjening</li></ul>'},
+      B:{tag:'Industri &amp; serieproduktion', title:'Sm&aring; taktforbedringer ganges op i serie',
+         html:'<p>I serieproduktion sl&aring;r selv sm&aring; forbedringer kraftigt igennem. Et sekunds reduktion i takttid p&aring; en celle med 1.400 emner i d&oslash;gnet svarer til n&aelig;sten 24 minutters ekstra kapacitet &mdash; hver dag, uden ekstra bemanding.</p>'+
+         '<div class="chart">'+bar('Nuv&aelig;rende OEE', 62,'62 %','dim')+bar('Efter optimering', 82,'82 %','good')+'</div>'},
+      C:{tag:'Tr&aelig;byggeri &amp; elementer', title:'Pr&aelig;fabrikation flytter timerne indend&oslash;rs',
+         html:'<p>Ved at flytte v&aelig;g- og tagelementer fra byggeplads til hal reduceres montagetiden markant, og kvaliteten bliver m&aring;lbar. En automatiseret multifunktionsbro udf&oslash;rer s&oslash;mning, fr&aelig;sning og udskaeringer i &eacute;n opsp&aelig;nding.</p>'+
+         '<div class="chart">'+bar('Manuelt samlebord', 100,'100 %','dim')+bar('WEINMANN-linje', 42,'42 %','good')+'</div>'+
+         '<p style="margin-top:10px">Relativ tidsforbrug pr. v&aelig;gelement.</p>'},
+      D:{tag:'Bygningskomponenter', title:'Variantstyring er den skjulte omkostning',
+         html:'<p>D&oslash;re, vinduer og trapper har h&oslash;j variantgrad og lav seriel gentagelse. Uden parametrisk konstruktion og direkte maskinoverf&oslash;rsel bruges op mod en tredjedel af arbejdsforberedelsen p&aring; at genskabe data, der allerede findes i ordren.</p>'+
+         '<ul class="klist"><li>Parametriske komponenter frem for tegning pr. ordre</li><li>Automatisk styklistegenerering</li><li>CNC-bearbejdning i &eacute;n opsp&aelig;nding</li></ul>'}
+    }[a.segment];
+    if(seg){ seg.style='hl'; out.push(seg); }
+    return out;
+  },
+
+  2:function(a){
+    const out=[];
+    out.push({tag:'N&oslash;gletal &middot; nedetid', style:'hl',
+      title:'Hvad koster en time med stillestaaende produktion?',
+      html:'<div class="stat"><span class="big">12.000&ndash;25.000</span><span class="unit">DKK / time</span></div>'+
+        '<p>Uplanlagt nedetid koster i gennemsnit en tr&aelig;virksomhed 12.000&ndash;25.000 DKK pr. time i tabt d&aelig;kningsbidrag og operat&oslash;rspild. Beregningen d&aelig;kker stillestaaende maskiner, bunden bemanding og forskudte leveringer.</p>'+
+        '<div class="chart">'+
+          bar('Tabt d&aelig;kningsbidrag', 58,'58 %','warm')+
+          bar('Bunden bemanding', 27,'27 %','')+
+          bar('Omk&oslash;rsel og hastesag', 15,'15 %','dim')+
+        '</div>',
+      src:'Fordeling af omkostningen ved et gennemsnitligt uplanlagt stop.'});
+    const age={
+      A:{tag:'Maskinalder', title:'Moderne park &mdash; udnyt data frem for jern',
+         html:'<p>Med maskiner under tre &aring;r ligger potentialet sj&aelig;ldent i udskiftning, men i udnyttelsesgraden. Produktionsdata fra styringen viser typisk 15&ndash;25 % uudnyttet kapacitet i eksisterende celler.</p>'},
+      B:{tag:'Maskinalder', title:'3&ndash;8 &aring;r: tidspunktet for forebyggende indsats',
+         html:'<p>Her stiger sliddelsomkostningerne m&aelig;rkbart, mens maskinen stadig har mange &aring;r tilbage. Retrofit af h&aring;ndtering og styring giver ofte 60&ndash;70 % af gevinsten ved en ny maskine til en br&oslash;kdel af investeringen.</p>'},
+      C:{tag:'Maskinalder', title:'Over 8 &aring;r: reservedele bliver flaskehalsen',
+         html:'<p>P&aring; &aelig;ldre maskiner er det sj&aelig;ldent selve mekanikken, men leveringstiden p&aring; styringskomponenter, der forl&aelig;nger stoppene. Gennemsnitlig varighed af et stop stiger typisk fra 40 minutter til over 3 timer.</p>'+
+         '<div class="chart">'+bar('Under 3 &aring;r', 22,'0,7 t','good')+bar('3&ndash;8 &aring;r', 45,'1,4 t','')+bar('Over 8 &aring;r', 100,'3,1 t','warm')+'</div>'+
+         '<p style="margin-top:10px">Gennemsnitlig varighed pr. uplanlagt stop.</p>'}
+    }[a.age];
+    if(age){ age.style='blue'; out.push(age); }
+    if(a.downtime==='C' || a.downtime==='B'){
+      const stops = a.downtime==='C' ? 4.3 : 1.5;
+      const hours = a.downtime==='C' ? 2.4 : 1.6;
+      const cost  = Math.round(stops*hours*16000/1000)*1000;
+      out.push({tag:'Dit svar &middot; beregnet', style:'hl',
+        title:'Estimeret m&aring;nedlig omkostning ved jeres stopfrekvens',
+        html:'<div class="stat"><span class="big">'+fmt(cost)+'</span><span class="unit">DKK / m&aring;ned</span></div>'+
+          '<p>Beregnet ud fra ca. '+String(stops).replace('.',',')+' stop om m&aring;neden &aring; ca. '+String(hours).replace('.',',')+' timer til en middelsats p&aring; 16.000 DKK pr. time. Forebyggende vedligehold og tilstandsoverv&aring;gning reducerer typisk dette tal med 40&ndash;60 %.</p>'});
+    }
+    return out;
+  },
+
+  3:function(a){
+    const out=[];
+    out.push({tag:'HOMAG LOOPTEQ', style:'hl',
+      title:'&Eacute;n operat&oslash;r kan k&oslash;re kantlimeren alene',
+      html:'<p>Ved at tilf&oslash;je et automatisk returl&oslash;b (f.eks. HOMAG LOOPTEQ) til en kantlimer kan &eacute;n operat&oslash;r k&oslash;re maskinen alene. Det &oslash;ger kapaciteten med op til 30 % og sparer &eacute;n fuldtidsstilling.</p>'+
+      '<div class="chart">'+
+        bar('2 operat&oslash;rer', 70,'100 %','dim')+
+        bar('1 operat&oslash;r + returl&oslash;b', 91,'130 %','good')+
+      '</div>'+
+      '<p style="margin-top:10px">Relativ kapacitet pr. skiftehold ved kantlimning.</p>',
+      src:'Erfaringstal ved efterinstallation p&aring; eksisterende kantlimer.'});
+    const h={
+      A:{tag:'Dit svar &middot; potentiale', title:'To h&aelig;nder bundet pr. maskine',
+         html:'<p>Med to operat&oslash;rer pr. hovedmaskine bindes ca. 1.700 mandetimer om &aring;ret pr. maskine i ren h&aring;ndtering. Med en gennemsnitlig belastet timel&oslash;n p&aring; 380 DKK svarer det til over 640.000 DKK &aring;rligt &mdash; f&oslash;r der er produceret en eneste ekstra plade.</p>'+
+         '<div class="chart">'+bar('H&aring;ndtering', 64,'64 %','warm')+bar('V&aelig;rdiskabende', 36,'36 %','good')+'</div>'},
+      B:{tag:'Dit svar &middot; potentiale', title:'Vakuuml&oslash;fteren l&oslash;ser ergonomi, ikke takttid',
+         html:'<p>Vakuuml&oslash;ft fjerner den fysiske belastning, men operat&oslash;ren er fortsat bundet til maskinen. Skridtet til et automatisk returl&oslash;b eller pladelager frig&oslash;r typisk 40&ndash;60 % af operat&oslash;rens tid til klarg&oslash;ring og kvalitetskontrol.</p>'},
+      C:{tag:'Dit svar &middot; niveau', title:'I er allerede i den automatiserede tredjedel',
+         html:'<p>Kun omkring hver tredje danske producent har automatisk materialefremf&oslash;ring ved hovedmaskinerne. N&aelig;ste trin er typisk cellestyring: at &eacute;n operat&oslash;r overv&aring;ger flere maskiner via produktionsdata frem for fysisk tilstedev&aelig;relse.</p>'}
+    }[a.handling];
+    if(h){ h.style='blue'; out.push(h); }
+    return out;
+  },
+
+  4:function(a){
+    const out=[];
+    out.push({tag:'Intelligent nesting', style:'hl',
+      title:'Op mod 80.000 DKK sparet pr. maskine om &aring;ret',
+      html:'<p>Intelligent nesting-software fra HOMAG kan reducere r&aring;varespild med op til 15 % om &aring;ret &mdash; svarende til op mod 80.000 DKK pr. maskine. Algoritmen optimerer opdelingen p&aring; tv&aelig;rs af ordrer og inddrager restplader automatisk.</p>'+
+      '<div class="chart">'+
+        bar('Manuel opdeling', 100,'18 %','warm')+
+        bar('Optimeret nesting', 39,'7 %','good')+
+      '</div>'+
+      '<p style="margin-top:10px">Typisk spildprocent p&aring; plademateriale f&oslash;r og efter.</p>',
+      src:'HOMAG intelliDivide / nesting-benchmark.'});
+    const d={
+      A:{tag:'Dit svar &middot; datastr&oslash;m', title:'Papir er den dyreste transportform for data',
+         html:'<p>Manuel indtastning ved styringen tager typisk 8&ndash;14 minutter pr. ordre og er kilde til hovedparten af alle m&aring;lfejl. Ved 60 ordrer om ugen svarer det til n&aelig;sten 10 timers ren indtastning &mdash; plus omk&oslash;rsel af de emner, der bliver forkerte.</p>'+
+         '<ul class="klist"><li>Ingen versionsstyring n&aring;r tegningen &aelig;ndres</li><li>Fejl opdages f&oslash;rst efter bearbejdning</li><li>Viden er bundet til enkelte n&oslash;glepersoner</li></ul>'},
+      B:{tag:'Dit svar &middot; datastr&oslash;m', title:'Filer flytter data &mdash; men ikke ansvaret',
+         html:'<p>DXF via USB fjerner indtastningen, men ikke den manuelle version- og fejlh&aring;ndtering. Med direkte CAD/CAM-kobling forsvinder mellemledet, og maskinprogrammet genereres automatisk fra den godkendte konstruktion.</p>'},
+      C:{tag:'Dit svar &middot; niveau', title:'Ubrudt datakaede &mdash; udnyt n&aelig;ste lag',
+         html:'<p>Med fuld CAD/CAM-integration er grundlaget p&aring; plads. Gevinsten ligger nu i produktionsdata: automatisk feedback om takttider, stilstand og materialeforbrug pr. ordre, s&aring; efterkalkulationen bliver faktabaseret.</p>'}
+    }[a.data];
+    if(d){ d.style='blue'; out.push(d); }
+    if(a.waste){
+      const cur = {A:6, B:13, C:20}[a.waste];
+      const opt = Math.max(4, Math.round(cur*0.55));
+      out.push({tag:'Dit svar &middot; beregnet', style:'blue',
+        title:'Jeres spildniveau sat op mod det optimerede',
+        html:'<div class="chart">'+
+          bar('I dag', Math.round(cur/22*100),'ca. '+cur+' %', cur>10?'warm':'')+
+          bar('Med nesting', Math.round(opt/22*100), 'ca. '+opt+' %','good')+
+          '</div><p style="margin-top:11px">Ved et &aring;rligt pladek&oslash;b p&aring; 3 mio. DKK svarer forskellen til '+fmt(Math.round((cur-opt)/100*3000000/10000)*10000)+' DKK om &aring;ret i sparet r&aring;vare.</p>'});
+    }
+    return out;
+  },
+
+  5:function(a){
+    const out=[];
+    out.push({tag:'Prioritering', style:'blue',
+      title:'M&aring;let bestemmer r&aelig;kkef&oslash;lgen &mdash; ikke budgettet',
+      html:'<p>De st&aelig;rkeste investeringsforl&oslash;b starter sj&aelig;ldent med den st&oslash;rste maskine. De starter med det led, der begr&aelig;nser hele fl&oslash;jen. Dit svar afg&oslash;r, om tyngden i anbefalingen lander p&aring; software, h&aring;ndtering, maskinkapacitet eller elementbyggeri.</p>'});
+    const g={
+      A:{tag:'S&aelig;nke omkostninger', title:'Timerne ligger i h&aring;ndteringen',
+         html:'<p>N&aring;r m&aring;let er lavere enhedsomkostning, giver returl&oslash;b, pladelager og optimeret opdeling typisk hurtigst effekt. Disse tiltag har normalt den korteste tilbagebetalingstid i hele produktionen.</p>'+
+         '<div class="chart">'+bar('Returl&oslash;b/h&aring;ndtering', 92,'H&oslash;j','good')+bar('Nesting-software', 78,'H&oslash;j','good')+bar('Ny hovedmaskine', 46,'Middel','')+'</div>'+
+         '<p style="margin-top:10px">Relativ effekt pr. investeret krone.</p>'},
+      B:{tag:'&Oslash;ge kapacitet', title:'Kapacitet uden nyans&aelig;ttelser',
+         html:'<p>Med nuv&aelig;rende bemanding ligger den realistiske kapacitetsforbedring p&aring; 25&ndash;40 % gennem automatisk materialefremf&oslash;ring og reduceret omstillingstid &mdash; svarende til n&aelig;sten et halvt ekstra skiftehold.</p>'},
+      C:{tag:'Digitalisering', title:'Papirl&oslash;st v&aelig;rksted er en datadisciplin',
+         html:'<p>Et papirl&oslash;st v&aelig;rksted kr&aelig;ver, at emnet kan identificeres entydigt hele vejen. Med barcode og terminaler ved maskinerne forsvinder s&oslash;getid og fejlplukning, og status pr. ordre bliver synlig i realtid.</p>'},
+      D:{tag:'Elementbyggeri', title:'WEINMANN: fra samlebord til produktionslinje',
+         html:'<p>Opstart af pr&aelig;fabrikeret elementbyggeri sker typisk i etaper: f&oslash;rst samleborde med kip- og vendefunktion, dernaest en multifunktionsbro til s&oslash;mning og fr&aelig;sning, og til sidst automatisk pladeh&aring;ndtering.</p>'+
+         '<ul class="klist"><li>Trin 1: BUILDTEQ samle- og vendeborde</li><li>Trin 2: WALLTEQ multifunktionsbro</li><li>Trin 3: Pladeforsyning og butterfly-vender</li></ul>'}
+    }[a.goal];
+    if(g){ g.style='hl'; out.push(g); }
+    return out;
+  }
+};
+
+/* ============================================================
+   4. Beregningsmotor
+   ============================================================ */
+function fmt(n){ return Math.round(n).toLocaleString('da-DK'); }
+function roundTo(n, s){ return Math.round(n/s)*s; }
+function clamp(n, lo, hi){ return Math.min(hi, Math.max(lo, n)); }
+
+/* 4.1 Produktions-Index 0-100 */
+function calcIndex(a){
+  let s = 0;
+  ['age','downtime','handling','data','waste'].forEach(function(k){
+    s += (SCORE[k] && SCORE[k][a[k]]) || 0;
+  });
+  return clamp(Math.round(s), 0, 100);
+}
+function indexProfile(i){
+  if(i < 35) return {label:'Manuel drift', desc:'Produktionen b&aelig;res i h&oslash;j grad af mandetimer og erfaring. Potentialet for hurtige gevinster er tilsvarende stort &mdash; is&aelig;r p&aring; h&aring;ndtering og datastr&oslash;m.'};
+  if(i < 58) return {label:'Delvist optimeret', desc:'Fundamentet er p&aring; plads, men v&aelig;rdikaeden brydes fortsat af manuelle led. M&aring;lrettede tiltag p&aring; de svageste omr&aring;der giver hurtig effekt.'};
+  if(i < 80) return {label:'Digitalt modnet', desc:'I arbejder struktureret med data og h&aring;ndtering. Gevinsten ligger nu i at l&oslash;fte de sidste flaskehalse og udnytte kapaciteten i de eksisterende celler.'};
+  return {label:'Automatiseret frontl&oslash;ber', desc:'Produktionen er i den &oslash;verste tiendedel af branchen. Fokus b&oslash;r rettes mod cellestyring, produktionsdata og skalering af den eksisterende platform.'};
+}
+
+/* 4.2 Estimeret investeringsramme */
+const INVEST_BASE = { A:[140000,350000], B:[500000,1350000], C:[900000,3400000], D:[380000,1150000] };
+const INVEST_DELTA = {
+  age:      {A:-0.06, B:0.00, C:0.12},   /* &aelig;ldre park kr&aelig;ver st&oslash;rre l&oslash;ft   */
+  handling: {A: 0.10, B:0.02, C:-0.08},  /* manuel h&aring;ndtering = mere automation */
+  data:     {A: 0.05, B:0.00, C:-0.05},  /* papirbaseret = software oveni    */
+  waste:    {A:-0.04, B:0.00, C:0.08},   /* h&oslash;jt spild = opdelingsteknologi  */
+  goal:     {A:-0.05, B:0.12, C:-0.15, D:0.30}
+};
+function calcInvestment(a){
+  const base = INVEST_BASE[a.segment] || INVEST_BASE.A;
+  let lo = base[0], hi = base[1], m = 1;
+  Object.keys(INVEST_DELTA).forEach(function(k){
+    m += (INVEST_DELTA[k][a[k]] !== undefined) ? INVEST_DELTA[k][a[k]] : 0;
+  });
+  lo *= m; hi *= m;
+  if(a.goal === 'D'){ lo = Math.max(lo, 1200000); hi = Math.max(hi, 3200000); }
+  const step = hi > 1500000 ? 50000 : 10000;
+  return { low: roundTo(lo, step), high: roundTo(hi, step), mid: roundTo((lo+hi)/2, step) };
+}
+
+/* 4.3 M&aring;nedlige besparelser og tilbagebetalingstid */
+function calcSavings(a, invest){
+  const labour   = ({A:34000, B:16000, C:5000})[a.handling] || 0;
+  const downBase = ({A:3000, B:14000, C:38000})[a.downtime] || 0;
+  const ageF     = ({A:0.85, B:1.00, C:1.25})[a.age] || 1;
+  const material = ({A:1800, B:4200, C:7600})[a.waste] || 0;
+  const admin    = ({A:9500, B:5200, C:1500})[a.data] || 0;
+  const segScale = ({A:0.80, B:1.25, C:1.40, D:1.00})[a.segment] || 1;
+  const realisation = 0.55; /* konservativ realiseringsgrad */
+  /* &Oslash;get kapacitet: frigjort maskintid omsat til d&aelig;kningsbidrag, skalerer med anl&aelig;ggets st&oslash;rrelse */
+  const capFactor = (a.goal === 'B' || a.goal === 'D') ? 0.0075 : 0.0050;
+  const parts = {
+    labour:   labour * segScale * realisation,
+    downtime: downBase * ageF * segScale * realisation,
+    material: material * segScale * realisation,
+    admin:    admin * segScale * realisation,
+    capacity: (invest ? invest.mid : 0) * capFactor
+  };
+  const total = parts.labour + parts.downtime + parts.material + parts.admin + parts.capacity;
+  return { parts: parts, monthly: roundTo(total, 500), yearly: roundTo(total*12, 5000) };
+}
+function calcPayback(invest, savings){
+  const raw = savings.monthly > 0 ? invest.mid / savings.monthly : 99;
+  const p = clamp(Math.round(raw), 11, 22);
+  return { low: clamp(p-2, 11, 22), high: clamp(p+2, 11, 22), mid: p, raw: Math.round(raw) };
+}
+
+/* 4.4 L&oslash;sningskatalog og anbefalingsregler */
+const PRODUCTS = [
+  { id:'loopteq', name:'HOMAG LOOPTEQ O-300 returl&oslash;b', cat:'Automation',
+    desc:'Automatisk returl&oslash;bssystem til kantlimeren, der f&oslash;rer emnet tilbage til operat&oslash;ren. &Eacute;n mand betjener hele cellen frem for to.',
+    rule:function(a){ let s=0; if(a.handling==='A') s+=100; if(a.handling==='B') s+=70;
+      if(a.segment==='A'||a.segment==='B'||a.segment==='D') s+=25; if(a.goal==='B') s+=20; if(a.goal==='A') s+=15; return s; },
+    why:function(a){ return a.handling==='A'
+      ? 'I binder i dag <b>to operat&oslash;rer pr. maskine</b>. Returl&oslash;bet frig&oslash;r den ene og &oslash;ger kapaciteten op til 30 %.'
+      : 'Vakuuml&oslash;fteren l&oslash;ser ergonomien &mdash; returl&oslash;bet l&oslash;ser <b>takttiden</b> og g&oslash;r operat&oslash;ren fri til klarg&oslash;ring.'; } },
+
+  { id:'storeteq', name:'HOMAG STORETEQ S-200 pladelager', cat:'Materialefl&oslash;j',
+    desc:'Automatisk pladelager med portalh&aring;ndtering, der forsyner opdelingssaven natten og dagen igennem og styrer restplader digitalt.',
+    rule:function(a){ let s=0; if(a.segment==='B') s+=80; if(a.segment==='D') s+=45; if(a.segment==='A') s+=20;
+      if(a.handling==='A') s+=35; if(a.waste==='C') s+=30; if(a.waste==='B') s+=15; if(a.goal==='B') s+=35; return s; },
+    why:function(a){ return 'Automatisk pladeforsyning fjerner tunge l&oslash;ft, giver <b>digital restpladestyring</b> og muligg&oslash;r ubemandet drift i randtimerne.'; } },
+
+  { id:'centateq', name:'HOMAG CENTATEQ N-300 nesting-CNC', cat:'Bearbejdning',
+    desc:'Nesting-bearbejdningscenter til pladeopdeling, boring og fr&aelig;sning i &eacute;n opsp&aelig;nding &mdash; med automatisk emneudtag.',
+    rule:function(a){ let s=0; if(a.segment==='A') s+=60; if(a.segment==='D') s+=55; if(a.segment==='B') s+=30;
+      if(a.waste==='C') s+=40; if(a.waste==='B') s+=20; if(a.age==='C') s+=35; if(a.goal==='B') s+=20; return s; },
+    why:function(a){ return 'Samler opdeling, boring og fr&aelig;sning i &eacute;n proces og reducerer <b>antallet af h&aring;ndteringer pr. emne</b> markant.'; } },
+
+  { id:'woodwop', name:'HOMAG woodWOP &amp; CAD/CAM-integration', cat:'Software',
+    desc:'Direkte kobling mellem konstruktion og maskine. Maskinprogrammer genereres automatisk fra godkendte data &mdash; uden indtastning ved styringen.',
+    rule:function(a){ let s=0; if(a.data==='A') s+=100; if(a.data==='B') s+=65;
+      if(a.goal==='C') s+=45; if(a.segment==='A') s+=20; if(a.segment==='D') s+=25; return s; },
+    why:function(a){ return a.data==='A'
+      ? 'I dag tastes m&aring;l manuelt ved styringen. Direkte overf&oslash;rsel fjerner <b>indtastningsfejl og dobbeltarbejde</b> i arbejdsforberedelsen.'
+      : 'DXF via USB flytter filer, men ikke ansvaret. Fuld integration fjerner <b>versionsfejl og mellemled</b>.'; } },
+
+  { id:'intellidivide', name:'HOMAG intelliDivide nesting-optimering', cat:'Software',
+    desc:'Skybaseret optimering af opdeling og nesting p&aring; tv&aelig;rs af ordrer, inkl. automatisk inddragelse af restplader.',
+    rule:function(a){ let s=0; if(a.waste==='C') s+=95; if(a.waste==='B') s+=60;
+      if(a.goal==='A') s+=30; if(a.goal==='C') s+=20; if(a.segment==='A') s+=25; if(a.segment==='B') s+=20; return s; },
+    why:function(a){ return 'Reducerer r&aring;varespild med op til 15 % &mdash; typisk <b>op mod 80.000 DKK pr. maskine om &aring;ret</b> i sparet plademateriale.'; } },
+
+  { id:'wallteq', name:'WEINMANN WALLTEQ M-380 multifunktionsbro', cat:'Elementbyggeri',
+    desc:'Automatiseret bro til s&oslash;mning, fr&aelig;sning og udskaeringer i v&aelig;g-, tag- og gulvelementer &mdash; med CNC-styret befaestelsesm&oslash;nster.',
+    rule:function(a){ let s=0; if(a.segment==='C') s+=110; if(a.goal==='D') s+=100; if(a.data!=='A') s+=10; return s; },
+    why:function(a){ return 'Udf&oslash;rer beklaedning, befaestelse og udskaeringer i <b>&eacute;n automatiseret arbejdsgang</b> med dokumenteret kvalitet pr. element.'; } },
+
+  { id:'buildteq', name:'WEINMANN BUILDTEQ samle- og vendeborde', cat:'Elementbyggeri',
+    desc:'Samle-, kip- og vendeborde der g&oslash;r elementproduktionen ergonomisk og taktstyret &mdash; det naturlige f&oslash;rste trin mod en fuld linje.',
+    rule:function(a){ let s=0; if(a.segment==='C') s+=85; if(a.goal==='D') s+=80; if(a.handling==='A') s+=20; return s; },
+    why:function(a){ return 'Etablerer <b>fast takt i elementproduktionen</b> og kan udbygges trinvist til en komplet WEINMANN-linje.'; } },
+
+  { id:'tapio', name:'HOMAG tapio &amp; ServiceBoard produktionsdata', cat:'Digital service',
+    desc:'Overv&aring;gning af maskintilstand, stilstand og takttider i realtid, kombineret med fjernsupport og digital servicehistorik.',
+    rule:function(a){ let s=0; if(a.downtime==='C') s+=95; if(a.downtime==='B') s+=60;
+      if(a.age==='C') s+=45; if(a.age==='B') s+=20; if(a.goal==='C') s+=25; return s; },
+    why:function(a){ return 'G&oslash;r nedetiden m&aring;lbar og forebyggende. Med et stopniveau som jeres er <b>hver reduceret time direkte d&aelig;kningsbidrag</b>.'; } },
+
+  { id:'edgeteq', name:'HOMAG EDGETEQ S-300 kantlimer', cat:'Bearbejdning',
+    desc:'Kantlimer med airTec-teknologi og hurtig omstilling mellem kantmaterialer &mdash; til synlig kvalitet uden limfuge.',
+    rule:function(a){ let s=0; if(a.age==='C') s+=70; if(a.age==='B') s+=25;
+      if(a.segment==='A') s+=30; if(a.segment==='B') s+=35; if(a.segment==='D') s+=20; if(a.downtime==='C') s+=25; return s; },
+    why:function(a){ return 'En maskinpark over 8 &aring;r giver <b>l&aelig;ngere stop og l&aelig;ngere omstilling</b>. Ny kantlimer l&oslash;fter b&aring;de kvalitet og takttid.'; } },
+
+  { id:'productionmanager', name:'HOMAG productionManager &amp; stregkodestyring', cat:'Software',
+    desc:'Digital ordre- og emnestyring med terminaler ved maskinerne. Status pr. emne og ordre er synlig i realtid &mdash; uden papir p&aring; v&aelig;rkstedet.',
+    rule:function(a){ let s=0; if(a.goal==='C') s+=95; if(a.data==='A') s+=45; if(a.data==='B') s+=30;
+      if(a.segment==='A') s+=25; if(a.segment==='D') s+=25; return s; },
+    why:function(a){ return 'Fjerner papirlisterne og g&oslash;r <b>s&oslash;getid og fejlplukning</b> til m&aring;lbare tal frem for erfaring.'; } }
+];
+
+function recommend(a){
+  return PRODUCTS.map(function(p){ return {p:p, s:p.rule(a)}; })
+    .filter(function(x){ return x.s > 40; })
+    .sort(function(x,y){ return y.s - x.s; })
+    .slice(0,3)
+    .map(function(x){ return x.p; });
+}
+
+function calcResult(a){
+  const index = calcIndex(a);
+  const invest = calcInvestment(a);
+  const savings = calcSavings(a, invest);
+  const payback = calcPayback(invest, savings);
+  return {
+    index: index, profile: indexProfile(index), invest: invest,
+    savings: savings, payback: payback, recs: recommend(a),
+    categories: [
+      {label:'Maskinsundhed &amp; drift', pct: Math.round(((SCORE.age[a.age]||0)+(SCORE.downtime[a.downtime]||0))/40*100)},
+      {label:'Automationsgrad', pct: Math.round((SCORE.handling[a.handling]||0)/20*100)},
+      {label:'Digital modenhed', pct: Math.round((SCORE.data[a.data]||0)/20*100)},
+      {label:'Materialeudnyttelse', pct: Math.round((SCORE.waste[a.waste]||0)/20*100)}
+    ]
+  };
+}
+
+/* ============================================================
+   5. Applikationstilstand og visning
+   ============================================================ */
+const STEP_LABELS = ['Profil','Maskinsundhed','Automation','Digitalt flow','M&aring;l','Resultat'];
+const state = { step:1, answers:{}, lead:null, sending:false, ref:null };
+
+const panelEl = document.getElementById('panel');
+const knowEl  = document.getElementById('knowledge');
+const layoutEl= document.getElementById('layout');
+
+function stepDef(n){ return STEPS[n-1]; }
+function stepComplete(n){
+  const s = stepDef(n);
+  if(!s) return true;
+  return s.questions.every(function(q){ return !!state.answers[q.id]; });
+}
+function allComplete(){ return [1,2,3,4,5].every(stepComplete); }
+
+/* 5.1 Fremdriftsbar */
+function renderProgress(){
+  document.getElementById('progressFill').style.width = Math.round(state.step/6*100)+'%';
+  document.getElementById('stepList').innerHTML = STEP_LABELS.map(function(lbl, i){
+    const n = i+1;
+    const cls = n === state.step ? 'active' : (n < state.step || (n<6 && stepComplete(n)) ? 'done' : '');
+    const mark = (cls === 'done') ? '<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round">'+ICONS.check+'</svg>' : n;
+    return '<li class="'+cls+'"><span class="num">'+mark+'</span><span class="txt">'+lbl+'</span></li>';
+  }).join('');
+}
+
+/* 5.2 Sp&oslash;rgsm&aring;lstrin */
+function renderStep(){
+  const s = stepDef(state.step);
+  const html = [];
+  html.push('<div class="eyebrow">'+s.eyebrow+'</div>');
+  html.push('<h1>'+s.heading+'</h1>');
+  html.push('<p class="lead">'+s.lead+'</p>');
+  s.questions.forEach(function(q){
+    html.push('<div class="qblock">');
+    html.push('<div class="qlabel"><span class="qtag">'+q.tag+'</span><h2>'+q.text+'</h2></div>');
+    if(q.hint) html.push('<p class="qhint">'+q.hint+'</p>');
+    html.push('<div class="options" role="radiogroup" aria-label="'+q.text.replace(/"/g,'')+'">');
+    q.options.forEach(function(o){
+      const sel = state.answers[q.id] === o.key;
+      html.push(
+        '<button type="button" class="opt'+(sel?' sel':'')+'" role="radio" aria-checked="'+sel+'" data-q="'+q.id+'" data-k="'+o.key+'">'+
+          '<span class="ico">'+icon(o.icon)+'</span>'+
+          '<span class="body"><span class="t"><span class="key">'+o.key+'</span>'+o.t+'</span><span class="d">'+o.d+'</span></span>'+
+          '<span class="mark"><svg viewBox="0 0 24 24">'+ICONS.check+'</svg></span>'+
+        '</button>');
+    });
+    html.push('</div></div>');
+  });
+
+  const ready = stepComplete(state.step);
+  const nextLabel = state.step === 5 ? 'Beregn mit resultat' : 'N&aelig;ste trin';
+  html.push('<div class="nav">');
+  html.push(state.step > 1
+    ? '<button type="button" class="btn btn-ghost" id="btnBack"><svg viewBox="0 0 24 24">'+ICONS.arrowL+'</svg>Tilbage</button>'
+    : '<span class="nav-hint">Dine svar behandles fortroligt og gemmes ikke uden dit samtykke.</span>');
+  html.push('<button type="button" class="btn btn-primary" id="btnNext"'+(ready?'':' disabled')+'>'+nextLabel+
+    '<svg viewBox="0 0 24 24">'+ICONS.arrowR+'</svg></button>');
+  html.push('</div>');
+  panelEl.innerHTML = html.join('');
+
+  panelEl.querySelectorAll('.opt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const q = btn.getAttribute('data-q'), k = btn.getAttribute('data-k');
+      const first = !state.answers[q];
+      state.answers[q] = k;
+      render();
+      /* Auto-fremdrift f&oslash;rste gang et trin bliver komplet */
+      if(first && stepComplete(state.step) && state.step < 5){
+        setTimeout(function(){ if(stepComplete(state.step)) go(state.step+1); }, 420);
+      }
+    });
+  });
+  const bn = document.getElementById('btnNext');
+  if(bn) bn.addEventListener('click', function(){ if(stepComplete(state.step)) go(state.step+1); });
+  const bb = document.getElementById('btnBack');
+  if(bb) bb.addEventListener('click', function(){ go(state.step-1); });
+}
+
+/* 5.3 Videns-nuggets */
+function renderKnowledge(){
+  if(state.step > 5){ knowEl.style.display='none'; knowEl.innerHTML=''; return; }
+  knowEl.style.display='';
+  const items = (NUGGETS[state.step] || function(){return[];})(state.answers);
+  knowEl.innerHTML = '<div class="k-head"><span class="dot"></span><h3>Videns-nuggets</h3></div>' +
+    items.map(nug).join('');
+}
+
+/* 5.4 Resultat-dashboard */
+function renderResult(){
+  const a = state.answers;
+  const r = calcResult(a);
+  const C = 2*Math.PI*64;
+  const off = C*(1 - r.index/100);
+  const h = [];
+
+  h.push('<div class="print-only" style="margin-bottom:18px"><h2 style="font-size:20px">Produktionsrapport</h2>'+
+    '<p style="font-size:13px;color:#5A646C">Genereret '+new Date().toLocaleDateString('da-DK',{day:'numeric',month:'long',year:'numeric'})+
+    ' &middot; Segment: '+SEGMENT_LABEL[a.segment]+'</p></div>');
+
+  h.push('<div class="result-grid">');
+
+  /* --- venstre: analyse --- */
+  h.push('<div>');
+  h.push('<div class="report-head">'+
+    '<div class="gauge"><svg viewBox="0 0 148 148">'+
+      '<circle class="track" cx="74" cy="74" r="64"></circle>'+
+      '<circle class="val" cx="74" cy="74" r="64" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'" id="gaugeVal"></circle>'+
+    '</svg><div class="num"><b id="gaugeNum">0</b><span>Index</span></div></div>'+
+    '<div><div class="rh-eyebrow">Trin 6 af 6 &middot; Din produktionsanalyse</div>'+
+      '<h2>'+r.profile.label+'</h2><p>'+r.profile.desc+'</p>'+
+      '<span class="badge">'+SEGMENT_LABEL[a.segment]+'</span></div>'+
+  '</div>');
+
+  h.push('<div class="kpis">'+
+    '<div class="kpi"><div class="kl">Produktions-Index</div><div class="kv">'+r.index+' <small>/ 100</small></div>'+
+      '<div class="kd">Samlet modenhed p&aring; drift, automation, data og materialeudnyttelse.</div></div>'+
+    '<div class="kpi amber"><div class="kl">Investeringsramme</div><div class="kv">'+fmt(r.invest.low)+'&ndash;'+fmt(r.invest.high)+' <small>DKK</small></div>'+
+      '<div class="kd">Vejledende ramme for det anbefalede l&oslash;sningsspor, ekskl. moms og installation.</div></div>'+
+    '<div class="kpi green"><div class="kl">Tilbagebetalingstid</div><div class="kv">'+r.payback.low+'&ndash;'+r.payback.high+' <small>m&aring;neder</small></div>'+
+      '<div class="kd">Beregnet ud fra frigjorte arbejdstimer, reduceret nedetid og lavere materialespild.</div></div>'+
+    '<div class="kpi"><div class="kl">Estimeret besparelse</div><div class="kv">'+fmt(r.savings.monthly)+' <small>DKK / md.</small></div>'+
+      '<div class="kd">Svarer til ca. '+fmt(r.savings.yearly)+' DKK om &aring;ret ved fuld indfasning.</div></div>'+
+  '</div>');
+
+  h.push('<div class="section-title"><h3>Din profil fordelt p&aring; omr&aring;der</h3><span class="line"></span></div>');
+  h.push('<div class="breakdown">'+
+    r.categories.map(function(c){
+      const cls = c.pct >= 70 ? 'good' : (c.pct >= 40 ? '' : 'warm');
+      return bar(c.label, c.pct, c.pct+' %', cls);
+    }).join('')+
+    '<p style="font-size:13px;color:var(--graphite-500);margin-top:14px">De laveste s&oslash;jler repr&aelig;senterer det st&oslash;rste uindfriede potentiale &mdash; og er derfor prioriteret f&oslash;rst i anbefalingen nedenfor.</p>'+
+  '</div>');
+
+  h.push('<div class="section-title"><h3>Anbefalede HOMAG-l&oslash;sninger</h3><span class="line"></span></div>');
+  h.push('<div class="recs">'+ r.recs.map(function(p, i){
+    return '<article class="rec"><div class="rec-top"><h4>'+(i+1)+'. '+p.name+'</h4><span class="cat">'+p.cat+'</span></div>'+
+      '<p>'+p.desc+'</p><div class="why"><b>Derfor til jer:</b> '+p.why(a)+'</div></article>';
+  }).join('') +'</div>');
+
+  h.push('<div class="section-title"><h3>Beregningsgrundlag</h3><span class="line"></span></div>');
+  h.push('<div class="breakdown">'+
+    bar('Frigjorte mandetimer', pctOf(r.savings.parts.labour, r.savings.monthly), fmt(r.savings.parts.labour)+' kr.','')+
+    bar('Reduceret nedetid', pctOf(r.savings.parts.downtime, r.savings.monthly), fmt(r.savings.parts.downtime)+' kr.','warm')+
+    bar('Lavere materialespild', pctOf(r.savings.parts.material, r.savings.monthly), fmt(r.savings.parts.material)+' kr.','good')+
+    bar('Mindre administration', pctOf(r.savings.parts.admin, r.savings.monthly), fmt(r.savings.parts.admin)+' kr.','')+
+    bar('&Oslash;get kapacitet', pctOf(r.savings.parts.capacity, r.savings.monthly), fmt(r.savings.parts.capacity)+' kr.','')+
+    '<p style="font-size:13px;color:var(--graphite-500);margin-top:14px">M&aring;nedlige besparelser er beregnet med en konservativ realiseringsgrad p&aring; 55 % af det teoretiske potentiale og en belastet timesats p&aring; 380 DKK.</p>'+
+  '</div>');
+
+  h.push('<p class="disclaimer">Estimaterne er vejledende og baseret p&aring; erfaringstal fra sammenlignelige danske tr&aelig;bearbejdende virksomheder. Endelig investeringsramme og tilbagebetalingstid fastl&aelig;gges f&oslash;rst efter en produktionsgennemgang p&aring; adressen, hvor takttider, emnemix og layout m&aring;les konkret.</p>');
+  h.push('<div class="nav no-print"><button type="button" class="btn btn-ghost" id="btnBack"><svg viewBox="0 0 24 24">'+ICONS.arrowL+'</svg>Juster mine svar</button>'+
+    '<button type="button" class="btn btn-ghost" id="btnRestart"><svg viewBox="0 0 24 24">'+ICONS.refresh+'</svg>Start forfra</button></div>');
+  h.push('</div>');
+
+  /* --- h&oslash;jre: lead capture --- */
+  h.push('<div><div class="lead-card" id="leadCard">'+ leadFormHTML(r) +'</div></div>');
+  h.push('</div>');
+
+  panelEl.innerHTML = h.join('');
+  bindResult(r);
+}
+function pctOf(part, total){ return total > 0 ? clamp(Math.round(part/total*100), 2, 100) : 0; }
+
+/* 5.5 Lead capture-formular */
+function leadFormHTML(r){
+  if(state.lead){
+    return '<div class="success">'+
+      '<div class="ok"><svg viewBox="0 0 24 24">'+ICONS.check+'</svg></div>'+
+      '<h3>Tak, '+escapeHTML(state.lead.name.split(' ')[0])+'!</h3>'+
+      '<p>Din fulde produktionsrapport er p&aring; vej til <b>'+escapeHTML(state.lead.email)+'</b>. En produktionsr&aring;dgiver fra HOMAG Danmark kontakter dig inden for to hverdage for en uforpligtende gennemgang af tallene.</p>'+
+      '<div class="ref">Din sagsreference<br><b>'+state.ref+'</b></div>'+
+      '<button type="button" class="btn btn-primary btn-block" id="btnPrint"><svg viewBox="0 0 24 24">'+ICONS.print+'</svg>Udskriv eller gem som PDF</button>'+
+      '<button type="button" class="btn btn-ghost btn-block" style="margin-top:10px" id="btnRestart2"><svg viewBox="0 0 24 24">'+ICONS.refresh+'</svg>Lav en ny analyse</button>'+
+      '<div class="trust">'+
+        trustLine('Rapporten indeholder fuld beregning pr. omr&aring;de')+
+        trustLine('Referencecases fra sammenlignelig produktion')+
+        trustLine('Ingen binding &mdash; og ingen videregivelse af data')+
+      '</div></div>';
+  }
+  return '<div class="lead-head">'+
+      '<h3>F&aring; den fulde produktionsrapport</h3>'+
+      '<p>Vi samler analysen, beregningsgrundlaget og konkrete referencecases i &eacute;n rapport &mdash; tilpasset '+SEGMENT_LABEL[state.answers.segment].toLowerCase()+'.</p>'+
+    '</div>'+
+    '<div class="lead-body"><form id="leadForm" novalidate>'+
+      field('name','Navn','text','For- og efternavn', true)+
+      field('company','Virksomhed','text','Virksomhedens navn', true)+
+      field('email','E-mail','email','navn@virksomhed.dk', true)+
+      field('phone','Telefonnummer','tel','+45 00 00 00 00', true)+
+      '<div class="field" id="f-comment"><label for="i-comment">Kommentar</label>'+
+        '<textarea id="i-comment" name="comment" placeholder="Fort&aelig;l gerne kort om jeres st&oslash;rste flaskehals lige nu, eller hvorn&aring;r investeringen skal besluttes."></textarea></div>'+
+      '<label class="consent"><input type="checkbox" id="i-consent"><span>Ja tak, HOMAG Danmark m&aring; kontakte mig om produktionsr&aring;dgivning og opbevare mine oplysninger til dette form&aring;l.</span></label>'+
+      '<div class="field" id="f-consent" style="margin-top:-12px"><div class="msg">Samtykke er n&oslash;dvendigt, f&oslash;r vi m&aring; sende rapporten.</div></div>'+
+      '<button type="submit" class="btn btn-accent btn-block" id="btnSubmit">Send mig min fulde produktionsrapport &amp; r&aring;dgivning</button>'+
+      '<div class="trust">'+
+        trustLine('Svar fra en produktionsr&aring;dgiver inden for to hverdage')+
+        trustLine('Uforpligtende &mdash; og uden salgsm&oslash;de som forudsaetning')+
+        trustLine('Dine data behandles efter GDPR og videregives ikke')+
+      '</div>'+
+    '</form></div>';
+}
+function field(id, label, type, ph, req){
+  return '<div class="field" id="f-'+id+'">'+
+    '<label for="i-'+id+'">'+label+(req?' <span class="req">*</span>':'')+'</label>'+
+    '<input id="i-'+id+'" name="'+id+'" type="'+type+'" placeholder="'+ph+'" autocomplete="'+autoc(id)+'">'+
+    '<div class="msg" data-msg="'+id+'">Udfyld venligst dette felt.</div></div>';
+}
+function autoc(id){
+  return ({name:'name', company:'organization', email:'email', phone:'tel'})[id] || 'off';
+}
+function trustLine(t){
+  return '<div><svg viewBox="0 0 24 24">'+ICONS.check+'</svg><span>'+t+'</span></div>';
+}
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+  });
+}
+
+/* 5.6 Bindinger p&aring; resultatsiden */
+function bindResult(r){
+  /* animeret m&aring;ler og t&aelig;ller */
+  const g = document.getElementById('gaugeVal');
+  const num = document.getElementById('gaugeNum');
+  if(g){
+    const C = 2*Math.PI*64;
+    requestAnimationFrame(function(){ g.style.strokeDashoffset = (C*(1-r.index/100)).toFixed(1); });
+  }
+  if(num){
+    const t0 = performance.now(), dur = 1100;
+    (function tick(t){
+      const p = clamp((t-t0)/dur, 0, 1);
+      const eased = 1 - Math.pow(1-p, 3);
+      num.textContent = Math.round(r.index*eased);
+      if(p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  const bb = document.getElementById('btnBack');
+  if(bb) bb.addEventListener('click', function(){ go(5); });
+  const br = document.getElementById('btnRestart');
+  if(br) br.addEventListener('click', restart);
+  bindLead(r);
+}
+function bindLead(r){
+  const br2 = document.getElementById('btnRestart2');
+  if(br2) br2.addEventListener('click', restart);
+  const bp = document.getElementById('btnPrint');
+  if(bp) bp.addEventListener('click', function(){ window.print(); });
+  const form = document.getElementById('leadForm');
+  if(form) form.addEventListener('submit', function(e){ e.preventDefault(); submitLead(r); });
+}
+
+/* 5.7 Validering og simuleret indsendelse */
+function setErr(id, msg){
+  const f = document.getElementById('f-'+id);
+  if(!f) return;
+  f.classList.add('err');
+  const m = f.querySelector('.msg');
+  if(m && msg) m.innerHTML = msg;
+}
+function clearErr(id){
+  const f = document.getElementById('f-'+id);
+  if(f) f.classList.remove('err');
+}
+function submitLead(r){
+  if(state.sending) return;
+  const v = function(id){ const el = document.getElementById('i-'+id); return el ? el.value.trim() : ''; };
+  const data = { name:v('name'), company:v('company'), email:v('email'), phone:v('phone'), comment:v('comment') };
+  const consent = document.getElementById('i-consent').checked;
+  let ok = true;
+
+  ['name','company','email','phone'].forEach(clearErr);
+  clearErr('consent');
+
+  if(data.name.length < 2){ setErr('name','Angiv venligst dit fulde navn.'); ok = false; }
+  if(data.company.length < 2){ setErr('company','Angiv venligst virksomhedens navn.'); ok = false; }
+  if(!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(data.email)){ setErr('email','Angiv en gyldig e-mailadresse, f.eks. navn@virksomhed.dk.'); ok = false; }
+  if(data.phone.replace(/[^0-9]/g,'').length < 8){ setErr('phone','Angiv et telefonnummer p&aring; mindst 8 cifre.'); ok = false; }
+  if(!consent){ setErr('consent'); ok = false; }
+
+  if(!ok){
+    const first = document.querySelector('.field.err input, .field.err textarea');
+    if(first) first.focus();
+    return;
+  }
+
+  state.sending = true;
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Sender din rapport &hellip;';
+
+  /* Simuleret backend-kald */
+  setTimeout(function(){
+    state.sending = false;
+    state.lead = data;
+    state.ref = 'HDK-' + new Date().getFullYear() + '-' +
+      String(calcIndex(state.answers)).padStart(2,'0') +
+      Math.floor(1000 + Math.random()*9000);
+    const payload = {
+      reference: state.ref, lead: data, consent: true,
+      answers: state.answers, index: r.index,
+      investment: r.invest, payback: r.payback,
+      monthlySaving: r.savings.monthly,
+      recommendations: r.recs.map(function(p){ return p.id; }),
+      submittedAt: new Date().toISOString()
+    };
+    /* I produktion sendes payload til CRM/marketing automation */
+    console.log('[Produktions-Kompasset] Lead klar til afsendelse:', payload);
+    const card = document.getElementById('leadCard');
+    card.innerHTML = leadFormHTML(r);
+    bindLead(r);
+    card.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 950);
+}
+
+/* 5.8 Navigation og opstart */
+function go(n){
+  state.step = clamp(n, 1, 6);
+  if(state.step === 6 && !allComplete()){
+    state.step = [1,2,3,4,5].find(function(i){ return !stepComplete(i); });
+  }
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function restart(){
+  state.answers = {}; state.lead = null; state.ref = null; state.step = 1;
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function render(){
+  renderProgress();
+  if(state.step <= 5){
+    layoutEl.classList.remove('wide');
+    renderStep();
+  } else {
+    layoutEl.classList.add('wide');
+    renderResult();
+  }
+  renderKnowledge();
+}
+
+document.getElementById('topDate').textContent =
+  new Date().toLocaleDateString('da-DK', {day:'numeric', month:'long', year:'numeric'});
+render();
+</script>
+</body>
+</html>
