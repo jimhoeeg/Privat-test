@@ -8,8 +8,16 @@ et vejledende investerings- og ROI-estimat med konkrete produktanbefalinger.
 ## Kom i gang
 
 Åbn `index.html` direkte i en browser. Applikationen er en enkelt selvstændig fil
-uden byggetrin, afhængigheder eller eksterne kald — HTML, CSS og vanilla JavaScript
-er indlejret i filen.
+uden byggetrin, afhængigheder eller eksterne kald — HTML, CSS, vanilla JavaScript
+og skrifttypen er indlejret i filen, så den også fungerer offline.
+
+## Designlinje
+
+Layout, typografi og farver følger homag.com (DA): Barlow som skrifttype (latin-subset
+indlejret som data-URI), hvidt sidehoved med logo-lockup og hovedmenu, blå brand-hero,
+brødkrummelinje, firkantede kort, pill-formede knapper i HOMAG-cyan `#009EE0`,
+fyldte formularfelter og mørk sidefod. Primærfarverne er HOMAG-blå `#005080` og
+mørkeblå `#003D66`.
 
 ## Indhold
 
