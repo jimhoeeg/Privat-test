@@ -11,6 +11,13 @@ et vejledende investerings- og ROI-estimat med konkrete produktanbefalinger.
 uden byggetrin, afhængigheder eller eksterne kald — HTML, CSS, vanilla JavaScript
 og skrifttypen er indlejret i filen, så den også fungerer offline.
 
+## Logo
+
+`logo.svg` er kildefilen til HOMAG-logoet. Den er indlejret direkte i `index.html`,
+så applikationen forbliver én selvstændig fil. Udskiftes logoet, skal SVG-stierne
+opdateres begge steder — markuppen i sidehovedet bruger `fill="currentColor"`,
+så farven styres fra CSS-variablen `--navy-deep`.
+
 ## Designlinje
 
 Layout, typografi og farver følger homag.com (DA): Barlow som skrifttype (latin-subset

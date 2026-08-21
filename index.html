@@ -19,6 +19,7 @@
    ============================================================ */
 :root{
   --navy:#003D66;          /* HOMAG m&oslash;rkebl&aring;      */
+  --navy-deep:#00264B;     /* logoets navy            */
   --blue:#005080;          /* HOMAG bl&aring;             */
   --cyan:#009EE0;          /* HOMAG lysebl&aring; / CTA   */
   --cyan-dark:#0083BC;
@@ -59,22 +60,17 @@ svg{flex-shrink:0}
 /* ---------- Sidehoved ---------- */
 .site-header{background:var(--white);border-bottom:1px solid var(--line);position:relative;z-index:20}
 .hdr-inner{max-width:var(--wrap);margin:0 auto;padding:0 28px;height:78px;display:flex;align-items:center;gap:30px}
-.logo-lock{display:flex;align-items:center;gap:11px;flex-shrink:0;user-select:none}
-.logo-mark{
-  font-weight:800;font-size:23px;letter-spacing:-.06em;color:var(--navy);
-  border:2.5px solid var(--navy);border-radius:3px;padding:0 5px;line-height:1.25;
-}
-.logo-word{font-weight:800;font-size:29px;letter-spacing:.005em;color:var(--navy);line-height:1;
-  border-left:1.5px solid #B9C6D0;padding-left:11px}
+.logo-lock{display:flex;align-items:center;flex-shrink:0;color:var(--navy-deep);text-decoration:none}
+.logo{height:27px;width:auto;display:block}
 .main-nav{display:flex;align-items:center;gap:26px;margin:0 auto}
 .nav-item{
-  display:inline-flex;align-items:center;gap:5px;font-size:17px;font-weight:700;color:var(--navy);
+  display:inline-flex;align-items:center;gap:5px;font-size:17px;font-weight:700;color:var(--navy-deep);
   cursor:default;letter-spacing:-.005em;white-space:nowrap;
 }
 .nav-item svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-.nav-search svg{width:20px;height:20px;stroke:var(--navy);fill:none;stroke-width:2;stroke-linecap:round}
+.nav-search svg{width:20px;height:20px;stroke:var(--navy-deep);fill:none;stroke-width:2;stroke-linecap:round}
 .utils{display:flex;align-items:center;gap:22px;flex-shrink:0}
-.util{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:600;color:var(--navy);white-space:nowrap;cursor:default}
+.util{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:600;color:var(--navy-deep);white-space:nowrap;cursor:default}
 .util svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .util .chev{width:10px;height:10px;stroke-width:2.6;opacity:.8}
 
@@ -332,8 +328,7 @@ body[data-step]:not([data-step="1"]) .hero-kicker{display:none}
 @media (max-width:720px){
   body{font-size:16px}
   .hdr-inner{padding:0 16px;height:64px;gap:14px}
-  .logo-word{font-size:24px}
-  .logo-mark{font-size:19px}
+  .logo{height:22px}
   .utils{gap:14px;margin-left:auto}
   .crumbs-inner{padding:11px 16px;font-size:13px}
   .crumbs-inner .path{display:none}
@@ -394,10 +389,7 @@ body[data-step]:not([data-step="1"]) .hero-kicker{display:none}
 
 <header class="site-header">
   <div class="hdr-inner">
-    <div class="logo-lock" aria-label="HOMAG">
-      <span class="logo-mark" aria-hidden="true">HG</span>
-      <span class="logo-word">HOMAG</span>
-    </div>
+    <a class="logo-lock" href="#" aria-label="HOMAG Danmark"><svg class="logo" viewBox="0 0 138 20" role="img" aria-label="HOMAG" focusable="false"><g fill="currentColor" fill-rule="evenodd"><path d="M41.0336,0.4545 L41.0336,18.8295 L45.8206,18.8295 L45.8206,11.2635 L52.1256,11.2635 L52.1256,18.8295 L56.9126,18.8295 L56.9126,0.4545 L52.1256,0.4545 L52.1256,7.1455 L45.8206,7.1455 L45.8206,0.4545 L41.0336,0.4545 Z M67.6696,0.0685 C61.9306,0.0685 58.6106,4.2635 58.6106,9.6425 C58.6106,15.3555 62.2656,19.2155 67.6696,19.2155 C73.3316,19.2155 76.7286,15.0975 76.7286,9.6425 C76.7286,4.1345 73.2546,0.0685 67.6696,0.0685 L67.6696,0.0685 Z M63.3976,9.6425 C63.3976,6.3995 64.9416,4.1865 67.6436,4.1865 C70.4746,4.1865 71.9416,6.4505 71.9416,9.6425 C71.9416,12.8585 70.3976,15.0975 67.6696,15.0975 C64.9156,15.0975 63.3976,12.8585 63.3976,9.6425 L63.3976,9.6425 Z M78.4266,0.4545 L78.4266,18.8295 L82.9306,18.8295 L82.9306,4.8805 L82.9826,4.8805 L86.8426,18.8295 L90.4966,18.8295 L94.3576,4.8805 L94.4086,4.8805 L94.4086,18.8295 L98.9126,18.8295 L98.9126,0.4545 L91.8606,0.4545 L88.6956,12.7045 L88.6436,12.7045 L85.4786,0.4545 L78.4266,0.4545 Z M107.5076,0.4545 L100.6366,18.8295 L105.5516,18.8295 L106.7096,15.5355 L113.1186,15.5355 L114.2506,18.8295 L119.2436,18.8295 L112.3716,0.4545 L107.5076,0.4545 Z M109.9016,5.5505 L109.9526,5.5505 L111.9856,11.9835 L107.8166,11.9835 L109.9016,5.5505 Z M128.0316,0.0685 C122.4476,0.0685 118.8696,4.2895 118.8696,9.6425 C118.8696,15.1495 122.6276,19.2155 128.0316,19.2155 C130.1166,19.2155 132.1496,18.2895 133.1526,16.8225 L133.4366,18.8295 L136.5246,18.8295 L136.5246,8.7675 L128.8036,8.7675 L128.8036,12.3185 L132.1496,12.3185 C131.8406,14.0685 130.1936,15.0975 127.9546,15.0975 C125.1496,15.0975 123.6566,12.8845 123.6566,9.6425 C123.6566,6.4505 125.1746,4.1865 127.9286,4.1865 C129.8846,4.1865 131.3776,5.1645 131.5576,6.7085 L136.3446,6.7085 C135.9066,2.1275 131.9946,0.0685 128.0316,0.0685 L128.0316,0.0685 Z"/><path d="M24.5277,15.0497 C23.3297,16.0237 21.8017,16.6077 20.1367,16.6077 C16.2877,16.6077 13.1667,13.4887 13.1667,9.6397 C13.1667,5.7907 16.2877,2.6697 20.1367,2.6697 C21.8017,2.6697 23.3297,3.2547 24.5277,4.2287 L24.5277,0.4537 L13.2977,0.4537 L9.3497,0.4537 L9.3467,0.4537 L9.3467,7.7177 L5.1987,7.7177 L5.1987,0.4537 L0.9707,0.4537 L0.9707,18.8247 L5.1987,18.8247 L5.1987,11.3617 L9.3467,11.3617 L9.3467,18.8167 L9.3497,18.8167 L9.3497,18.8247 L24.5277,18.8247 L24.5277,15.0497 Z M20.1367,12.8387 C21.9037,12.8387 23.3367,11.4067 23.3367,9.6397 C23.3367,7.8717 21.9037,6.4387 20.1367,6.4387 C18.3687,6.4387 16.9357,7.8717 16.9357,9.6397 C16.9357,11.4067 18.3687,12.8387 20.1367,12.8387 L20.1367,12.8387 Z"/><polygon points="32.116 18.825 33.439 18.825 33.439 0.454 32.116 0.454"/></g></svg></a>
     <nav class="main-nav no-print" aria-label="Hovedmenu">
       <span class="nav-item">Maskiner <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
       <span class="nav-item">Software <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
